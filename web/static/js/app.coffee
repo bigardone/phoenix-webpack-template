@@ -1,1 +1,1 @@
-alert 'Epa!'
+console.log 'Aloha!'
