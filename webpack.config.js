@@ -13,15 +13,22 @@ function web(dest) { return join("web/static/" + dest); }
 var config = module.exports = {
   // our app's entry points - for this example we'll use a single each for
   // css and js
-  entry: [
-    web("css/app.sass"),
-    web("js/app.coffee")
-  ],
+  entry: {
+    app: [
+      web("css/app.sass"),
+      web("js/app.js")
+    ]
+  },
 
   // where webpack should output our files
   output: {
     path: join("priv/static"),
     filename: "js/app.js"
+  },
+
+  resolve: {
+    extesions: ['', '.js', '.sass', '.coffee'],
+    modulesDirectories: ['node_modules']
   },
 
   // more information on how our modules are structured, and
@@ -30,11 +37,16 @@ var config = module.exports = {
   // we use regexes to tell Webpack what files require special treatment, and
   // what patterns to exclude.
   module: {
+    noParse: /vendor\/phoenix/,
     loaders: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel"
+        loader: "babel",
+        include: /web\/static/,
+        query: {
+          presets: ['es2015']
+        }
       },
       {
         test: /\.coffee$/,
@@ -42,7 +54,7 @@ var config = module.exports = {
       },
       {
         test: /\.sass$/,
-        loader: ExtractTextPlugin.extract("style", "css!sass?indentedSyntax")
+        loader: ExtractTextPlugin.extract("style", "css!sass?indentedSyntax&includePaths[]=" + __dirname +  "/node_modules")
       }
     ]
   },
